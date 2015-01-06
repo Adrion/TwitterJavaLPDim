@@ -6,7 +6,7 @@
 public class Configuration {
 
 	public static String oauthstream = "https://stream.twitter.com/1.1/statuses/sample.json";
-	public static String userapi = "api.twitter.com/1.1/statuses/user_timeline.json?screen_name=";
+	public static String userapi = "https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=";
 	public static String mongo_location = "localhost";
 	public static int mongo_port = 27017;
 	public static String mongo_database = "twitterJava";

@@ -72,12 +72,18 @@ public class Tweets {
 		Authentication app = getConnectionData("app.xml");
 		connect();
 		
-		request = connect(app);
+		request = connect(app, Configuration.oauthstream);
 	
-		if(arg.equals("tweets")) retrieve(request);
+		if(arg.equals("tweets")) {
+			request = connect(app, Configuration.oauthstream);
+			retrieve(request);
+		}
 		if(arg.equals("search")) search();
 		if(arg.equals("socket")) socket();
-		if(arg.equals("tweetAccount")) tweetAccount(request, secArg);
+		if(arg.equals("tweetAccount")) {
+			request = connect(app, Configuration.userapi+secArg);
+			tweetAccount(request, secArg);
+		}
 	}
 
 	
@@ -190,23 +196,23 @@ public class Tweets {
 				// readLine, we just check whether live boolean variable is set
 				// to false
 				while ((in = reader.readLine()) != null) {
-					//System.out.println(in);
+					System.out.println(in);
 					if(!in.startsWith("{\"delete")) //si le tweet c'est pas un delete
 					{
 						/*On écrit dans la BDD noSQL*/
 						DBObject object = (DBObject)JSON.parse(in);
 						System.out.println(object);
-						BasicDBObject object2 = new BasicDBObject();
-						DBObject objectUser = (DBObject) object.get("user");
+						//BasicDBObject object2 = new BasicDBObject();
+						
 						//On prend que la partie du tweet qui nous intéresse
-						object2.put("created_at", object.get("created_at"));
-						object2.put("screen_name", objectUser.get("screen_name"));
-						object2.put("text", object.get("text"));
-						object2.put("entities", object.get("entities"));
+//						object2.put("created_at", object.get("created_at"));
+//						
+//						object2.put("text", object.get("text"));
+//						object2.put("entities", object.get("entities"));
 						
 						number++;
 						//System.out.println(object2);
-						this.collectionString +=  object2 +"\n";
+						this.collectionString +=  in +"\n";
 						System.out.println(this.collectionString);
 					}
 					if(number == 10){
@@ -351,14 +357,15 @@ public class Tweets {
 	 *            the data for connection
 	 * @return the request
 	 */
-	private HttpGet connect(Authentication app) {
+	private HttpGet connect(Authentication app, String url) {
 
 		OAuthConsumer consumer = new CommonsHttpOAuthConsumer(
 				app.getConsumerKey(), app.getConsumerSecret());
 
 		consumer.setTokenWithSecret(app.getAccessToken(), app.getAccessSecret());
-		HttpGet request = new HttpGet(Configuration.oauthstream);
-
+		HttpGet request = new HttpGet(url);
+		System.out.println(request);
+		
 		try {
 
 			consumer.sign(request);
