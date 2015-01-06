@@ -1,3 +1,4 @@
+#Cédric FROSSARD#
 # Twitter Application JAVA #
 
 Première application Java développée dans le cadre de la formation DIM.
